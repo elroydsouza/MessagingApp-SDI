@@ -30,6 +30,8 @@ private:
     Ui::loginScreen *ui;
 
     QSqlDatabase database;
+
+    QTimer *timer_ls;
 };
 
 #endif // LOGINSCREEN_H

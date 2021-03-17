@@ -1,5 +1,4 @@
-QT       += core gui
-QT       += sql
+QT       += core gui sql network mqtt
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,13 +16,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    chatScreen.cpp \
+    contactsScreen.cpp \
     loginScreen.cpp \
     main.cpp
 
 HEADERS += \
+    chatScreen.h \
+    contactsScreen.h \
     loginScreen.h \
 
 FORMS += \
+    chatScreen.ui \
+    contactsScreen.ui \
     loginScreen.ui \
 
 # Default rules for deployment.
