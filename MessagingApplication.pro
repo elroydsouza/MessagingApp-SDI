@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     chatScreen.cpp \
     contactsScreen.cpp \
+    currentUser.cpp \
     loginScreen.cpp \
     main.cpp
 

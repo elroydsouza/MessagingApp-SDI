@@ -19,6 +19,9 @@ public:
     explicit contactsScreen(QWidget *parent = nullptr);
     ~contactsScreen();
 
+private slots:
+    void on_buttonAddContact_clicked();
+
 private:
     Ui::contactsScreen *ui;
 };

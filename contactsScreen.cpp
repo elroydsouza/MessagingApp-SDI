@@ -41,3 +41,8 @@ contactsScreen::~contactsScreen()
 {
     delete ui;
 }
+
+void contactsScreen::on_buttonAddContact_clicked()
+{
+
+}

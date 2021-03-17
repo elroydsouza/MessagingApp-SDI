@@ -1,9 +1,13 @@
 #include "loginScreen.h"
 #include "ui_loginScreen.h"
+#include "contactsScreen.h"
+#include "currentUser.cpp"
 
 #include <QDebug>
 #include <QTimer>
 #include <QTime>
+
+#include <iostream>
 
 loginScreen::loginScreen(QWidget *parent) :
     QWidget(parent),
@@ -53,7 +57,9 @@ void loginScreen::on_loginButton_clicked()
         QString password = ui->password->text();
 
         QSqlQuery query(QSqlDatabase::database("MyConnect"));
-        query.prepare(QString("SELECT * FROM users WHERE username = :username AND password = :password"));
+        query.prepare(QString("SELECT * FROM users "
+                              "WHERE username = :username "
+                              "AND password = :password"));
 
         query.bindValue(":username",username);
         query.bindValue(":password",password);
@@ -63,7 +69,22 @@ void loginScreen::on_loginButton_clicked()
         if(query.next()){
              QMessageBox::information(this,"Success","You are logged in");
 
-             //closes window temp
+             QSqlQuery query;
+             query.prepare(QString("SELECT firstName, lastName "
+                                   "FROM users "
+                                   "WHERE username = :username"));
+
+             query.bindValue(":username",username);
+
+             query.exec();
+
+             QString firstName = query.value(0).toString();
+             QString lastName = query.value(1).toString();
+
+             currentUser currentUser(username, firstName, lastName);
+
+             std::cout << currentUser.currentUsername.toStdString() << std::endl;
+
              close();
 
          } else {
