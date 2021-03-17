@@ -1,6 +1,9 @@
 #include "loginScreen.h"
 #include "ui_loginScreen.h"
-#include<QDebug>
+
+#include <QDebug>
+#include <QTimer>
+#include <QTime>
 
 loginScreen::loginScreen(QWidget *parent) :
     QWidget(parent),
@@ -15,6 +18,12 @@ loginScreen::loginScreen(QWidget *parent) :
     ui->registerPassword->setPlaceholderText("Enter Password");
     ui->registerFirstName->setPlaceholderText("Enter First Name");
     ui->registerLastName->setPlaceholderText("Enter Last Name");
+
+    timer_ls = new QTimer(this);
+    QObject::connect(timer_ls, SIGNAL(timeout()), this, SLOT(UpdateTime()));
+    timer_ls -> start(1000);
+
+    ui->currentDateTime->setText(QTime::currentTime().toString("hh:mm:ss"));
 }
 
 loginScreen::~loginScreen()
@@ -22,6 +31,13 @@ loginScreen::~loginScreen()
     delete ui;
 }
 
+/*!
+ *  The login button pressed function
+ *
+ *  When the button is pressed the application establishes a connection to the database,
+ *  the database is then checked to see if the user exists within the 'users' table. If
+ *  it does, then the user should be successfully logged in, if not it displays an error.
+ */
 void loginScreen::on_loginButton_clicked()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
@@ -47,20 +63,26 @@ void loginScreen::on_loginButton_clicked()
         if(query.next()){
              QMessageBox::information(this,"Success","You are logged in");
 
-             //closes window
-             this->hide();
-             db.close();
+             //closes window temp
              close();
 
          } else {
              QMessageBox::information(this,"Error","Wrong password or username");
          }
 
+        db.close();
+
     } else {
         QMessageBox::information(this,"Not Connected","Database is not connected");
     }
 }
 
+/*!
+ *  The register button pressed function
+ *
+ *  When the button is pressed the application establishes a connection to the database,
+ *  It inserts the user's information into the 'users' table.
+ */
 void loginScreen::on_registerButton_clicked()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
@@ -94,9 +116,12 @@ void loginScreen::on_registerButton_clicked()
             ui->registerLastName->clear();
 
             QMessageBox::information(this,"Registration successful","Account has been created");
+
         } else {
             QMessageBox::information(this,"Registration unsuccessful","Account was not created");
         }
+
+        db.close();
 
     } else {
         QMessageBox::information(this,"Not Connected","Database is not connected");
