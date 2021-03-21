@@ -4,8 +4,10 @@
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QMessageBox>
-
+#include <QString>
 #include <QMainWindow>
+#include "user.h"
+#include <iostream>
 
 namespace Ui {
 class contactsScreen;
@@ -17,6 +19,9 @@ class contactsScreen : public QMainWindow
 
 public:
     explicit contactsScreen(QWidget *parent = nullptr);
+    void acceptUser(User _user);
+    QString testPrintUser() { return user.getUsername();}
+    void run();
     ~contactsScreen();
 
 private slots:
@@ -24,6 +29,7 @@ private slots:
 
 private:
     Ui::contactsScreen *ui;
+    User user;
 };
 
 #endif // CONTACTSSCREEN_H

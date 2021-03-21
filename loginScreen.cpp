@@ -1,7 +1,7 @@
 #include "loginScreen.h"
 #include "ui_loginScreen.h"
 #include "contactsScreen.h"
-#include "currentUser.cpp"
+#include "user.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -51,8 +51,6 @@ void loginScreen::on_loginButton_clicked()
     db.setDatabaseName("messagingApp");
 
     if(db.open()){
-        QMessageBox::information(this,"DATABASE CONNECTED", "Database connection ");
-
         QString username = ui->username->text();
         QString password = ui->password->text();
 
@@ -75,16 +73,20 @@ void loginScreen::on_loginButton_clicked()
                                    "WHERE username = :username"));
 
              query.bindValue(":username",username);
-
              query.exec();
+             query.next();
 
              QString firstName = query.value(0).toString();
              QString lastName = query.value(1).toString();
 
-             currentUser currentUser(username, firstName, lastName);
+             User user = User();
+             user.setUser(username, firstName, lastName);
+             db.close();
 
-             std::cout << currentUser.currentUsername.toStdString() << std::endl;
-
+             contactsScreen *openContact = new contactsScreen;
+             openContact->acceptUser(user);
+             openContact->show();
+             openContact->run();
              close();
 
          } else {

@@ -18,14 +18,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     chatScreen.cpp \
     contactsScreen.cpp \
-    currentUser.cpp \
     loginScreen.cpp \
-    main.cpp
+    main.cpp \
+    user.cpp
 
 HEADERS += \
     chatScreen.h \
     contactsScreen.h \
-    loginScreen.h \
+    loginScreen.h \ \
+    user.h
 
 FORMS += \
     chatScreen.ui \
