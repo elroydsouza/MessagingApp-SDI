@@ -1,6 +1,7 @@
 #include "loginScreen.h"
 #include "ui_loginScreen.h"
 #include "contactsScreen.h"
+#include "chatScreen.h"
 #include "user.h"
 
 #include <QDebug>
@@ -68,7 +69,7 @@ void loginScreen::on_loginButton_clicked()
              QMessageBox::information(this,"Success","You are logged in");
 
              QSqlQuery query;
-             query.prepare(QString("SELECT firstName, lastName "
+             query.prepare(QString("SELECT userID, firstName, lastName "
                                    "FROM users "
                                    "WHERE username = :username"));
 
@@ -76,17 +77,18 @@ void loginScreen::on_loginButton_clicked()
              query.exec();
              query.next();
 
-             QString firstName = query.value(0).toString();
-             QString lastName = query.value(1).toString();
+             int userID = query.value(0).toInt();
+             QString firstName = query.value(1).toString();
+             QString lastName = query.value(2).toString();
 
              User user = User();
-             user.setUser(username, firstName, lastName);
+             user.setUser(userID, username, firstName, lastName);
              db.close();
 
-             contactsScreen *openContact = new contactsScreen;
+             chatScreen *openContact = new chatScreen;
              openContact->acceptUser(user);
              openContact->show();
-             openContact->run();
+             //openContact->run();
              close();
 
          } else {

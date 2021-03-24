@@ -1,5 +1,6 @@
 #include "loginScreen.h"
 #include "contactsScreen.h"
+#include "chatScreen.h"
 
 #include <QApplication>
 

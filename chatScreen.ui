@@ -28,7 +28,7 @@
          </font>
         </property>
         <property name="text">
-         <string>*Contact Name*</string>
+         <string>Select a user</string>
         </property>
        </widget>
       </item>
@@ -46,9 +46,12 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="buttonConnect">
+       <widget class="QComboBox" name="comboBoxUsers"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="buttonChat">
         <property name="text">
-         <string>Connect</string>
+         <string>Chat</string>
         </property>
        </widget>
       </item>
@@ -72,7 +75,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="messageContentsTextField"/>
+       <widget class="QLineEdit" name="lineEditMessageContent"/>
       </item>
       <item>
        <widget class="QPushButton" name="buttonSend">

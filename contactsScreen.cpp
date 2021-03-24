@@ -40,6 +40,24 @@ void contactsScreen::run(){
         QMessageBox::information(this,"Not Connected","Database is not connected");
     }
 
+//    QPushButton *contactButtons[10];
+//    QVBoxLayout *layout = new QVBoxLayout(ui->scrollAreaWidgetContents);
+//    for (int i = 0; i == 10; i++){
+//        contactButtons[i] = new QPushButton;
+//        contactButtons[i]->setText("hi");
+//        layout->addWidget(contactButtons[i]);
+//    }
+
+//    QVBoxLayout *layout = new QVBoxLayout(ui->scrollArea);
+
+//    QPushButton *button;
+
+//    for (int i = 0; i == 10; i++){
+//        button = new QPushButton();
+//        layout->addWidget(button);
+//    }
+//    ui->scrollArea->show();
+
 }
 
 contactsScreen::~contactsScreen()
