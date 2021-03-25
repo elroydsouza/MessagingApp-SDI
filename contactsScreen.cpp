@@ -16,7 +16,7 @@ contactsScreen::contactsScreen(QWidget *parent) :
 void contactsScreen::run(){
     ui->labelWelcome->setText("Welcome " + user.getFirstName() + " " + user.getLastName() + "!");
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    QSqlDatabase db = QSqlDatabase::database("QMYSQLcon");
     db.setHostName("127.0.0.1");
     db.setUserName("admin");
     db.setPassword("RF66Ycwa3vI9");

@@ -19,3 +19,7 @@ QString User::getFirstName() {
 QString User::getLastName() {
     return currentLastName;
 };
+
+QString User::getFullName() {
+    return currentFullName;
+};

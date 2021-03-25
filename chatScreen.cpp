@@ -19,33 +19,21 @@ chatScreen::chatScreen(QWidget *parent) :
 
     connect(client, &QMqttClient::stateChanged, this, &chatScreen::updateLogStateChange); //Remove later
 
-    // Set combo box to all users in database
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("127.0.0.1");
-    db.setUserName("admin");
-    db.setPassword("RF66Ycwa3vI9");
-    db.setDatabaseName("messagingApp");
+    QString contactUsername;
 
-    if(db.open())
-    {
-        QString contactUsername;
+    std::cout << user.getUsername().toStdString() << std::endl;
 
-        QSqlQuery query("SELECT username "
-                        "FROM users");
+    QSqlQuery query("SELECT username "
+                    "FROM users");
 
-        while (query.next()) {
-            contactUsername = query.value(0).toString();
-
+    while (query.next()) {
+        contactUsername = query.value(0).toString();
+        if (contactUsername != user.getUsername()){
             ui->comboBoxUsers->addItem(contactUsername);
         }
-
-    } else {
-        QMessageBox::information(this,"Not Connected","Database is not connected");
     }
 
-    db.close();
-    QSqlDatabase::removeDatabase("QMYSQL");
-
+    // sending of the message
     connect(client, &QMqttClient::messageReceived, this, [this](const QByteArray &message) {
         const QString messageContent = QDateTime::currentDateTime().toString()
                     + QLatin1String(" Message: ")
@@ -54,6 +42,15 @@ chatScreen::chatScreen(QWidget *parent) :
         ui->messageLog->insertPlainText(messageContent);
     });
 
+    // pinging
+    connect(client, &QMqttClient::pingResponseReceived, this, [this]() {
+        const QString content = QDateTime::currentDateTime().toString()
+                    + QLatin1String(" PingResponse")
+                    + QLatin1Char('\n');
+        ui->messageLog->insertPlainText(content);
+    });
+
+    updateLogStateChange();
 }
 
 chatScreen::~chatScreen()
@@ -71,72 +68,68 @@ void chatScreen::on_buttonChat_clicked()
         client->connectToHost();
 
         // Check contacts table, if not add contact
-        QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-        db.setHostName("127.0.0.1");
-        db.setUserName("admin");
-        db.setPassword("RF66Ycwa3vI9");
-        db.setDatabaseName("messagingApp");
+        QMessageBox::information(this,"Connected","Database is connected");
+        QSqlQuery query;
+        query.prepare("SELECT userID "
+                        "FROM users "
+                        "WHERE username = :selectedUser");
 
-        if(db.open())
-        {
-            QMessageBox::information(this,"Connected","Database is connected");
-            QSqlQuery query;
-            query.prepare("SELECT userID "
-                            "FROM users "
-                            "WHERE username = :selectedUser");
+        query.bindValue(":selectedUser", selectedUser);
+        query.exec();
+        query.next();
 
-            query.bindValue(":selectedUser", selectedUser);
-            query.exec();
-            query.next();
+        int contactID = query.value(0).toInt();
+        int currentUserID = user.getUserID();
 
-            int contactID = query.value(0).toInt();
-            int currentUserID = user.getUserID();
+        query.prepare("SELECT topic "
+                      "FROM contacts "
+                      "WHERE currentUserID = :currentUserID "
+                      "AND contactID = :contactID");
 
-            query.prepare("SELECT topic "
-                          "FROM contacts "
-                          "WHERE currentUserID = :currentUserID "
-                          "AND contactID = :contactID");
+        query.bindValue(":currentUserID", currentUserID);
+        query.bindValue(":contactID", contactID);
 
+        query.exec();
+        query.next();
+
+        if(query.first()){
+            std::cout << "exec";
+            topic = query.value(0).toString();
+            std::cout << topic.toStdString() << std::endl;
+
+            auto subscription = client->subscribe(topic);
+            if (!subscription) {
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
+                return;
+            }
+        } else {
+            std::cout << "else";
+            QString generatedTopic = user.getUsername() + selectedUser;
+
+            query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
+                          "VALUES (:currentUserID, :contactID, :generatedTopic)");
             query.bindValue(":currentUserID", currentUserID);
             query.bindValue(":contactID", contactID);
+            query.bindValue(":generatedTopic", generatedTopic);
 
             query.exec();
 
-            if(query.first()){
-                std::cout << "exec";
-                query.next();
-                topic = query.value(0).toString();
-            } else {
-                std::cout << "else";
-                QString generatedTopic = user.getUsername() + selectedUser;
+            query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
+                          "VALUES (:contactID, :currentUserID, :generatedTopic)");
+            query.bindValue(":contactID", contactID);
+            query.bindValue(":currentUserID", currentUserID);
+            query.bindValue(":generatedTopic", generatedTopic);
 
-                query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
-                              "VALUES (:currentUserID, :contactID, :generatedTopic)");
-                query.bindValue(":currentUserID", currentUserID);
-                query.bindValue(":contactID", contactID);
-                query.bindValue(":generatedTopic", generatedTopic);
+            query.exec();
 
-                query.exec();
+            topic = generatedTopic;
 
-                query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
-                              "VALUES (:contactID, :currentUserID, :generatedTopic)");
-                query.bindValue(":contactID", contactID);
-                query.bindValue(":currentUserID", currentUserID);
-                query.bindValue(":generatedTopic", generatedTopic);
-
-                query.exec();
-
-                topic = generatedTopic;
+            auto subscription = client->subscribe(topic);
+            if (!subscription) {
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
+                return;
             }
-
-
-
-        } else {
-            QMessageBox::information(this,"Not Connected","Database is not connected");
         }
-
-        db.close();
-
 
     } else {
         ui->labelContactName->setText("Select a user");
@@ -148,7 +141,9 @@ void chatScreen::on_buttonChat_clicked()
 
 void chatScreen::on_buttonSend_clicked()
 {
-    client->publish(topic, ui->lineEditMessageContent->text().toUtf8());
+    if(client->publish(topic, ui->lineEditMessageContent->text().toUtf8()) == -1){
+        QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+    }
 }
 
 

@@ -55,7 +55,7 @@ void loginScreen::on_loginButton_clicked()
         QString username = ui->username->text();
         QString password = ui->password->text();
 
-        QSqlQuery query(QSqlDatabase::database("MyConnect"));
+        QSqlQuery query;
         query.prepare(QString("SELECT * FROM users "
                               "WHERE username = :username "
                               "AND password = :password"));
@@ -83,7 +83,6 @@ void loginScreen::on_loginButton_clicked()
 
              User user = User();
              user.setUser(userID, username, firstName, lastName);
-             db.close();
 
              chatScreen *openContact = new chatScreen;
              openContact->acceptUser(user);
@@ -95,7 +94,6 @@ void loginScreen::on_loginButton_clicked()
              QMessageBox::information(this,"Error","Wrong password or username");
          }
 
-        db.close();
 
     } else {
         QMessageBox::information(this,"Not Connected","Database is not connected");
@@ -110,47 +108,34 @@ void loginScreen::on_loginButton_clicked()
  */
 void loginScreen::on_registerButton_clicked()
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("127.0.0.1");
-    db.setUserName("admin");
-    db.setPassword("RF66Ycwa3vI9");
-    db.setDatabaseName("messagingApp");
+    QMessageBox::information(this,"DATABASE CONNECTED", "Database connection ");
 
-    if(db.open())
-    {
-        QMessageBox::information(this,"DATABASE CONNECTED", "Database connection ");
+    QString registerUsername = ui->registerUsername->text();
+    QString registerPassword = ui->registerPassword->text();
+    QString registerFirstName = ui->registerFirstName->text();
+    QString registerLastName = ui->registerLastName->text();
 
-        QString registerUsername = ui->registerUsername->text();
-        QString registerPassword = ui->registerPassword->text();
-        QString registerFirstName = ui->registerFirstName->text();
-        QString registerLastName = ui->registerLastName->text();
+    QSqlQuery query;
+    query.prepare(QString("INSERT INTO users (username, password, firstName, lastName)"
+                          "VALUES (:registerUsername, :registerPassword, :registerFirstName, :registerLastName)"));
 
-        QSqlQuery query;
-        query.prepare(QString("INSERT INTO users (username, password, firstName, lastName)"
-                              "VALUES (:registerUsername, :registerPassword, :registerFirstName, :registerLastName)"));
+    query.bindValue(":registerUsername",registerUsername);
+    query.bindValue(":registerPassword",registerPassword);
+    query.bindValue(":registerFirstName",registerFirstName);
+    query.bindValue(":registerLastName",registerLastName);
 
-        query.bindValue(":registerUsername",registerUsername);
-        query.bindValue(":registerPassword",registerPassword);
-        query.bindValue(":registerFirstName",registerFirstName);
-        query.bindValue(":registerLastName",registerLastName);
+    if(query.exec()){
+        ui->registerUsername->clear();
+        ui->registerPassword->clear();
+        ui->registerFirstName->clear();
+        ui->registerLastName->clear();
 
-        if(query.exec()){
-            ui->registerUsername->clear();
-            ui->registerPassword->clear();
-            ui->registerFirstName->clear();
-            ui->registerLastName->clear();
-
-            QMessageBox::information(this,"Registration successful","Account has been created");
-
-        } else {
-            QMessageBox::information(this,"Registration unsuccessful","Account was not created");
-        }
-
-        db.close();
+        QMessageBox::information(this,"Registration successful","Account has been created");
 
     } else {
-        QMessageBox::information(this,"Not Connected","Database is not connected");
+        QMessageBox::information(this,"Registration unsuccessful","Account was not created");
     }
+
 }
 
 void loginScreen::on_shutdownButton_clicked()
