@@ -48,7 +48,7 @@ void loginScreen::on_loginButton_clicked()
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("127.0.0.1");
     db.setUserName("admin");
-    db.setPassword("q8YqwopxETsR");
+    db.setPassword("RF66Ycwa3vI9");
     db.setDatabaseName("messagingApp");
 
     if(db.open()){
