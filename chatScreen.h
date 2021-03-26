@@ -19,6 +19,7 @@ class chatScreen : public QMainWindow
 public:
     explicit chatScreen(QWidget *parent = nullptr);
     void acceptUser(User _user);
+    void run();
     ~chatScreen();
 
 private slots:
@@ -28,11 +29,15 @@ private slots:
 
     void on_buttonChat_clicked();
 
+    void on_buttonExit_clicked();
+
 private:
     Ui::chatScreen *ui;
     QMqttClient *client;
     User user;
     QString topic;
+    QString messageContents;
+    QString preparedMessage;
 };
 
 #endif // CHATSCREEN_H
