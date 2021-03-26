@@ -48,7 +48,7 @@ void loginScreen::on_loginButton_clicked()
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("127.0.0.1");
     db.setUserName("admin");
-    db.setPassword("RF66Ycwa3vI9");
+    db.setPassword("q8YqwopxETsR");
     db.setDatabaseName("messagingApp");
 
     if(db.open()){
@@ -84,10 +84,10 @@ void loginScreen::on_loginButton_clicked()
              User user = User();
              user.setUser(userID, username, firstName, lastName);
 
-             chatScreen *openContact = new chatScreen;
-             openContact->acceptUser(user);
-             openContact->show();
-             //openContact->run();
+             chatScreen *openChat = new chatScreen;
+             openChat->acceptUser(user);
+             openChat->show();
+             openChat->run();
              close();
 
          } else {

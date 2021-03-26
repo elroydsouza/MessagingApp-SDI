@@ -9,7 +9,10 @@ chatScreen::chatScreen(QWidget *parent) :
     ui(new Ui::chatScreen)
 {
     ui->setupUi(this);
+}
 
+
+void chatScreen::run() {
     const QString hostName = "127.0.0.1";
     const int port = 1883;
 
@@ -36,7 +39,7 @@ chatScreen::chatScreen(QWidget *parent) :
     // sending of the message
     connect(client, &QMqttClient::messageReceived, this, [this](const QByteArray &message) {
         const QString messageContent = QDateTime::currentDateTime().toString()
-                    + QLatin1String(" Message: ")
+                    + ": "
                     + message
                     + QLatin1Char('\n');
         ui->messageLog->insertPlainText(messageContent);
@@ -93,9 +96,7 @@ void chatScreen::on_buttonChat_clicked()
         query.next();
 
         if(query.first()){
-            std::cout << "exec";
             topic = query.value(0).toString();
-            std::cout << topic.toStdString() << std::endl;
 
             auto subscription = client->subscribe(topic);
             if (!subscription) {
@@ -103,8 +104,7 @@ void chatScreen::on_buttonChat_clicked()
                 return;
             }
         } else {
-            std::cout << "else";
-            QString generatedTopic = user.getUsername() + selectedUser;
+            const QString generatedTopic = user.getUsername() + selectedUser;
 
             query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
                           "VALUES (:currentUserID, :contactID, :generatedTopic)");
@@ -141,7 +141,9 @@ void chatScreen::on_buttonChat_clicked()
 
 void chatScreen::on_buttonSend_clicked()
 {
-    if(client->publish(topic, ui->lineEditMessageContent->text().toUtf8()) == -1){
+    messageContents = ui->lineEditMessageContent->text();
+    preparedMessage = user.getFullName() + ": " + messageContents;
+    if(client->publish(topic, preparedMessage.toUtf8()) == -1){
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
     }
 }
@@ -158,4 +160,10 @@ void chatScreen::updateLogStateChange() // Remove later
 
 void chatScreen::acceptUser(User _user){
     user = _user;
+}
+
+void chatScreen::on_buttonExit_clicked()
+{
+    this->hide();
+    close();
 }
