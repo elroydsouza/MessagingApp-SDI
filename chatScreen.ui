@@ -24,7 +24,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="labelContactName">
+       <widget class="QLabel" name="labelChatName">
         <property name="font">
          <font>
           <pointsize>17</pointsize>
@@ -49,20 +49,53 @@
        </spacer>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBoxGroupChats"/>
+       <widget class="QComboBox" name="comboBoxGroupChats">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>0</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Select a Group</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="buttonGroupChat">
         <property name="text">
-         <string>PushButton</string>
+         <string>Chat</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBoxUsers"/>
+       <widget class="QComboBox" name="comboBoxUsers">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="currentText">
+         <string>Select a User</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Select a User</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="buttonChat">
+       <widget class="QPushButton" name="buttonUserChat">
         <property name="text">
          <string>Chat</string>
         </property>
@@ -91,86 +124,107 @@
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="labelAdmin">
-          <property name="text">
-           <string>Admin</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QListView" name="listViewAdmin">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>30</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="lableModerators">
-          <property name="text">
-           <string>Moderators</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QListView" name="listViewModerators">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelMembers">
-          <property name="text">
-           <string>Members</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QListView" name="listViewMembers">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QWidget" name="verticalLayout3Panel_2" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout3Panel">
+         <item>
+          <widget class="QLabel" name="labelAdmin">
+           <property name="text">
+            <string>Admin</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidgetAdmin">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="lableModerators">
+             <property name="text">
+              <string>Moderators</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="buttonDemote">
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>+Demote</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidgetModerators">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="labelMembers">
+             <property name="text">
+              <string>Members</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="buttonPromote">
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>+Promote</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidgetMembers">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </item>
@@ -200,23 +254,6 @@
        <widget class="QPushButton" name="buttonCreateGroup">
         <property name="text">
          <string>Create Group</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboBoxMembers"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="buttonPromote">
-        <property name="text">
-         <string>+Promote</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="buttonDemote">
-        <property name="text">
-         <string>+Demote</string>
         </property>
        </widget>
       </item>

@@ -1,4 +1,4 @@
-#include "groupsScreen.h"
+﻿#include "groupsScreen.h"
 #include "ui_groupsScreen.h"
 
 #include <iostream>
@@ -48,9 +48,6 @@ void groupsScreen::on_buttonAddMember_clicked()
         groupMembers.push_back(selectedUser);
         ui->listWidget->addItem(selectedUser);
     }
-
-    //QString s = ui->listWidget->currentItem()->text();
-    //std::cout << s.toStdString() << std::endl;
 }
 
 void groupsScreen::on_buttonCreateGroup_clicked()
@@ -89,4 +86,7 @@ void groupsScreen::on_buttonCreateGroup_clicked()
 
         query.exec();
     }
+
+    this->hide();
+    close();
 }

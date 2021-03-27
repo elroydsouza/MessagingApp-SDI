@@ -28,11 +28,23 @@ private slots:
 
     void on_buttonSend_clicked();
 
-    void on_buttonChat_clicked();
+    void on_buttonUserChat_clicked();
 
     void on_buttonExit_clicked();
 
     void on_buttonCreateGroup_clicked();
+
+    void on_buttonGroupChat_clicked();
+
+    void on_buttonPromote_clicked();
+
+    void on_buttonDemote_clicked();
+
+//    void refreshPanel();
+
+    void fillListWidgets();
+
+    void checkPermissionLevel();
 
 private:
     Ui::chatScreen *ui;
@@ -41,6 +53,7 @@ private:
     QString topic;
     QString messageContents;
     QString preparedMessage;
+    QString currentGroup;
 };
 
 #endif // CHATSCREEN_H
