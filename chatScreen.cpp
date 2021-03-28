@@ -66,9 +66,8 @@ void chatScreen::run() {
     ui->buttonPromote->setEnabled(false);
     ui->buttonDemote->setEnabled(false);
 
+    //Set verticalLayout for the 3 right hand panels hidden on load
     ui->verticalLayout3Panel_2->hide();
-
-    //std::thread refresh (&chatScreen::refreshPanel, this);
 
     updateLogStateChange();
 }
@@ -125,7 +124,13 @@ void chatScreen::on_buttonUserChat_clicked()
                     return;
                 }
 
-                ui->labelChatName->setText(selectedUser + " [online]");
+                QString online = user.getUsername() + " is online!";
+
+                if(client->publish(topic, online.toUtf8()) == -1){
+                    QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+                }
+
+                //ui->labelChatName->setText(selectedUser + " [online]");
 
             } else {
                 const QString generatedTopic = user.getUsername() + selectedUser;
@@ -155,13 +160,23 @@ void chatScreen::on_buttonUserChat_clicked()
                 }
             }
 
+            //option = 1;
+            //std::thread refresh (&chatScreen::refreshPanel, this, option);
+            //refresh.join();
+
         } else {
             ui->labelChatName->setText("Select a user");
+            ui->buttonUserChat->setText("Chat");
+
             ui->comboBoxUsers->setEnabled(true);
             ui->comboBoxGroupChats->setEnabled(true);
             ui->buttonGroupChat->setEnabled(true);
-            ui->buttonUserChat->setText("Chat");
+
             client->disconnectFromHost();
+
+            //option = 2;
+            //std::thread refresh (&chatScreen::refreshPanel, this, option);
+            //refresh.join();
         }
     }
 
@@ -195,15 +210,19 @@ void chatScreen::on_buttonGroupChat_clicked()
 
         } else {
             ui->labelChatName->setText("Select a Chat");
+            ui->buttonGroupChat->setText("Chat");
+
             ui->comboBoxUsers->setEnabled(true);
             ui->comboBoxGroupChats->setEnabled(true);
             ui->buttonUserChat->setEnabled(true);
-            ui->buttonGroupChat->setText("Chat");
-            client->disconnectFromHost();
+
             ui->verticalLayout3Panel_2->setVisible(false);
+
             ui->listWidgetAdmin->clear();
             ui->listWidgetModerators->clear();
             ui->listWidgetMembers->clear();
+
+            client->disconnectFromHost();
         }
     }
 
@@ -250,6 +269,7 @@ void chatScreen::on_buttonCreateGroup_clicked()
 void chatScreen::on_buttonPromote_clicked()
 {
     QString currentMember = ui->listWidgetMembers->currentItem()->text();
+    std::cout << currentMember.toStdString();
 
     if(currentMember != ""){
         QSqlQuery query;
@@ -269,27 +289,42 @@ void chatScreen::on_buttonPromote_clicked()
 
 void chatScreen::on_buttonDemote_clicked()
 {
-    QString currentMember = ui->listWidgetModerators->currentItem()->text();
+    QString currentMember = "hello";
+    std::cout << currentMember.toStdString() << std::endl;
 
-    QSqlQuery query;
-    query.prepare("UPDATE groupChat "
-                  "SET level = 3 "
-                  "WHERE memberUsername = :currentMember "
-                  "AND topic = :currentGroup");
+    currentMember = ui->listWidgetModerators->currentItem()->text();
+    std::cout << currentMember.toStdString() << std::endl;
 
-    query.bindValue(":currentMember", currentMember);
-    query.bindValue(":currentGroup", topic);
-    query.exec();
+    //if(currentMember.size() != -1){
+        QSqlQuery query;
+        query.prepare("UPDATE groupChat "
+                      "SET level = 3 "
+                      "WHERE memberUsername = :currentMember "
+                      "AND topic = :currentGroup");
+
+        query.bindValue(":currentMember", currentMember);
+        query.bindValue(":currentGroup", topic);
+        query.exec();
+    //}
 
     fillListWidgets();
     checkPermissionLevel();
 }
 
-//void chatScreen::refreshPanel(){
+//void chatScreen::refreshPanel(int option){
 //    while(true){
 //        std::cout << "5 seconds" << std::endl;
-////        fillListWidgets();
-////        checkPermissionLevel();
+
+//        switch(option){
+//            case 1:
+//                ui->labelChatName->setText(ui->labelChatName->text() + " [online]");
+//                break;
+//            case 2:
+//                std::terminate();
+//                break;
+//            default:
+//                break;
+//        }
 
 //        std::this_thread::sleep_for(std::chrono::seconds(5));
 //    }
@@ -352,8 +387,6 @@ void chatScreen::checkPermissionLevel(){
 
     int userLevel = query.value(0).toInt();
 
-    std::cout << userLevel << std::endl;
-
     switch(userLevel){
         case 3:
             ui->buttonPromote->setEnabled(false);
@@ -364,4 +397,13 @@ void chatScreen::checkPermissionLevel(){
             ui->buttonDemote->setEnabled(true);
             break;
     }
+}
+
+void chatScreen::on_buttonRefresh_clicked()
+{
+    QString groupChatActive = ui->buttonGroupChat->text();
+    if (groupChatActive == "Stop Chatting"){
+        fillListWidgets();
+        checkPermissionLevel();
+    }    
 }

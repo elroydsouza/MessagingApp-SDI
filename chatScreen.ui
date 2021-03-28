@@ -271,6 +271,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="buttonRefresh">
+        <property name="text">
+         <string>Refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="buttonExit">
         <property name="text">
          <string>Exit</string>

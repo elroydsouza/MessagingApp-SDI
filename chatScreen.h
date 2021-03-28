@@ -40,11 +40,13 @@ private slots:
 
     void on_buttonDemote_clicked();
 
-//    void refreshPanel();
+    //void refreshPanel(int option);
 
     void fillListWidgets();
 
     void checkPermissionLevel();
+
+    void on_buttonRefresh_clicked();
 
 private:
     Ui::chatScreen *ui;
@@ -54,6 +56,7 @@ private:
     QString messageContents;
     QString preparedMessage;
     QString currentGroup;
+    //int option;
 };
 
 #endif // CHATSCREEN_H
