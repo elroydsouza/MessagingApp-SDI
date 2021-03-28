@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     chatScreen.cpp \
     contactsScreen.cpp \
+    groupsScreen.cpp \
     loginScreen.cpp \
     main.cpp \
     user.cpp
@@ -25,12 +26,14 @@ SOURCES += \
 HEADERS += \
     chatScreen.h \
     contactsScreen.h \
+    groupsScreen.h \
     loginScreen.h \ \
     user.h
 
 FORMS += \
     chatScreen.ui \
     contactsScreen.ui \
+    groupsScreen.ui \
     loginScreen.ui \
 
 # Default rules for deployment.

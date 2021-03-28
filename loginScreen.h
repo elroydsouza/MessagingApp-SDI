@@ -26,6 +26,10 @@ private slots:
 
     void on_registerButton_clicked();
 
+//    std::string encryptPassword(std::string password);
+
+//    std::string decryptPassword(std::string password);
+
 private:
     Ui::loginScreen *ui;
 

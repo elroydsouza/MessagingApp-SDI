@@ -173,7 +173,11 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLineEdit" name="registerUsername"/>
+            <widget class="QLineEdit" name="registerUsername">
+             <property name="maxLength">
+              <number>15</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -204,6 +208,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="registerPassword">
+             <property name="maxLength">
+              <number>15</number>
+             </property>
              <property name="echoMode">
               <enum>QLineEdit::Password</enum>
              </property>
@@ -240,7 +247,11 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLineEdit" name="registerFirstName"/>
+            <widget class="QLineEdit" name="registerFirstName">
+             <property name="maxLength">
+              <number>15</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -270,7 +281,11 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLineEdit" name="registerLastName"/>
+            <widget class="QLineEdit" name="registerLastName">
+             <property name="maxLength">
+              <number>15</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -375,6 +390,9 @@
                <height>0</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>15</number>
+             </property>
             </widget>
            </item>
           </layout>
@@ -420,6 +438,9 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="maxLength">
+              <number>15</number>
              </property>
              <property name="echoMode">
               <enum>QLineEdit::Password</enum>

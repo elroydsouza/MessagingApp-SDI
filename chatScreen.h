@@ -7,6 +7,7 @@
 #include <QtSql>
 #include <QMessageBox>
 #include "user.h"
+#include "groupsScreen.h"
 
 namespace Ui {
 class chatScreen;
@@ -27,9 +28,25 @@ private slots:
 
     void on_buttonSend_clicked();
 
-    void on_buttonChat_clicked();
+    void on_buttonUserChat_clicked();
 
     void on_buttonExit_clicked();
+
+    void on_buttonCreateGroup_clicked();
+
+    void on_buttonGroupChat_clicked();
+
+    void on_buttonPromote_clicked();
+
+    void on_buttonDemote_clicked();
+
+    //void refreshPanel(int option);
+
+    void fillListWidgets();
+
+    void checkPermissionLevel();
+
+    void on_buttonRefresh_clicked();
 
 private:
     Ui::chatScreen *ui;
@@ -38,6 +55,8 @@ private:
     QString topic;
     QString messageContents;
     QString preparedMessage;
+    QString currentGroup;
+    //int option;
 };
 
 #endif // CHATSCREEN_H

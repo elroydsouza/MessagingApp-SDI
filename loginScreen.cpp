@@ -48,7 +48,7 @@ void loginScreen::on_loginButton_clicked()
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("127.0.0.1");
     db.setUserName("admin");
-    db.setPassword("q8YqwopxETsR");
+    db.setPassword("RF66Ycwa3vI9");
     db.setDatabaseName("messagingApp");
 
     if(db.open()){
@@ -108,35 +108,66 @@ void loginScreen::on_loginButton_clicked()
  */
 void loginScreen::on_registerButton_clicked()
 {
-    QMessageBox::information(this,"DATABASE CONNECTED", "Database connection ");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setHostName("127.0.0.1");
+    db.setUserName("admin");
+    db.setPassword("RF66Ycwa3vI9");
+    db.setDatabaseName("messagingApp");
 
-    QString registerUsername = ui->registerUsername->text();
-    QString registerPassword = ui->registerPassword->text();
-    QString registerFirstName = ui->registerFirstName->text();
-    QString registerLastName = ui->registerLastName->text();
+    if(db.open()){
+        QString registerUsername = ui->registerUsername->text();
+        QString registerPassword = ui->registerPassword->text();
+        QString registerFirstName = ui->registerFirstName->text();
+        QString registerLastName = ui->registerLastName->text();
 
-    QSqlQuery query;
-    query.prepare(QString("INSERT INTO users (username, password, firstName, lastName)"
-                          "VALUES (:registerUsername, :registerPassword, :registerFirstName, :registerLastName)"));
+        QSqlQuery query;
+        query.prepare(QString("INSERT INTO users (username, password, firstName, lastName)"
+                              "VALUES (:registerUsername, :registerPassword, :registerFirstName, :registerLastName)"));
 
-    query.bindValue(":registerUsername",registerUsername);
-    query.bindValue(":registerPassword",registerPassword);
-    query.bindValue(":registerFirstName",registerFirstName);
-    query.bindValue(":registerLastName",registerLastName);
+        query.bindValue(":registerUsername",registerUsername);
+        query.bindValue(":registerPassword",registerPassword);
+        query.bindValue(":registerFirstName",registerFirstName);
+        query.bindValue(":registerLastName",registerLastName);
 
-    if(query.exec()){
-        ui->registerUsername->clear();
-        ui->registerPassword->clear();
-        ui->registerFirstName->clear();
-        ui->registerLastName->clear();
+        if(query.exec()){
+            ui->registerUsername->clear();
+            ui->registerPassword->clear();
+            ui->registerFirstName->clear();
+            ui->registerLastName->clear();
 
-        QMessageBox::information(this,"Registration successful","Account has been created");
+            QMessageBox::information(this,"Registration successful","Account has been created");
 
-    } else {
-        QMessageBox::information(this,"Registration unsuccessful","Account was not created");
+        } else {
+            QMessageBox::information(this,"Registration unsuccessful","Account was not created");
+        }
     }
 
 }
+
+//std::string encryptPassword(std::string password) {
+//    int key = 2;
+//    std::string encryptedPassword;
+
+//    for (int charCodeValue : password) {
+//        charCodeValue = charCodeValue + key;
+//        encryptedPassword.push_back(charCodeValue);
+//    }
+
+//    return encryptedPassword;
+//}
+
+//std::string decryptPassword(std::string password) {
+
+//    int key = 2;
+//    std::string decryptedPassword;
+
+//    for (int charCodeValue : password) {
+//        charCodeValue = charCodeValue - key;
+//        decryptedPassword.push_back(charCodeValue);
+//    }
+
+//    return decryptedPassword;
+//}
 
 void loginScreen::on_shutdownButton_clicked()
 {
