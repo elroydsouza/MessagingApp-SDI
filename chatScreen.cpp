@@ -50,6 +50,7 @@ void chatScreen::run() {
 
     while (query.next()) {
         groupName = query.value(0).toString();
+        groupsInComboBox.push_back(groupName);
         ui->comboBoxGroupChats->addItem(groupName);
     }
 
@@ -160,10 +161,6 @@ void chatScreen::on_buttonUserChat_clicked()
                 }
             }
 
-            //option = 1;
-            //std::thread refresh (&chatScreen::refreshPanel, this, option);
-            //refresh.join();
-
         } else {
             ui->labelChatName->setText("Select a user");
             ui->buttonUserChat->setText("Chat");
@@ -173,10 +170,6 @@ void chatScreen::on_buttonUserChat_clicked()
             ui->buttonGroupChat->setEnabled(true);
 
             client->disconnectFromHost();
-
-            //option = 2;
-            //std::thread refresh (&chatScreen::refreshPanel, this, option);
-            //refresh.join();
         }
     }
 
@@ -225,7 +218,6 @@ void chatScreen::on_buttonGroupChat_clicked()
             client->disconnectFromHost();
         }
     }
-
 }
 
 void chatScreen::on_buttonSend_clicked()
@@ -238,8 +230,7 @@ void chatScreen::on_buttonSend_clicked()
     ui->lineEditMessageContent->clear();
 }
 
-
-void chatScreen::updateLogStateChange() // Remove later
+void chatScreen::updateLogStateChange() ////////////////////////////////////// Remove later
 {
     const QString content = QTime::currentTime().toString()
                     + QLatin1String(": State Change ")
@@ -268,10 +259,9 @@ void chatScreen::on_buttonCreateGroup_clicked()
 
 void chatScreen::on_buttonPromote_clicked()
 {
-    QString currentMember = ui->listWidgetMembers->currentItem()->text();
-    std::cout << currentMember.toStdString();
+    if(ui->listWidgetMembers->selectedItems().count() != 0){
+        QString currentMember = ui->listWidgetMembers->currentItem()->text();
 
-    if(currentMember != ""){
         QSqlQuery query;
         query.prepare("UPDATE groupChat "
                       "SET level = 2 "
@@ -289,13 +279,9 @@ void chatScreen::on_buttonPromote_clicked()
 
 void chatScreen::on_buttonDemote_clicked()
 {
-    QString currentMember = "hello";
-    std::cout << currentMember.toStdString() << std::endl;
+    if(ui->listWidgetModerators->selectedItems().count() != 0){
+        QString currentMember = ui->listWidgetModerators->currentItem()->text();
 
-    currentMember = ui->listWidgetModerators->currentItem()->text();
-    std::cout << currentMember.toStdString() << std::endl;
-
-    //if(currentMember.size() != -1){
         QSqlQuery query;
         query.prepare("UPDATE groupChat "
                       "SET level = 3 "
@@ -305,30 +291,11 @@ void chatScreen::on_buttonDemote_clicked()
         query.bindValue(":currentMember", currentMember);
         query.bindValue(":currentGroup", topic);
         query.exec();
-    //}
 
-    fillListWidgets();
-    checkPermissionLevel();
+        fillListWidgets();
+        checkPermissionLevel();
+    }
 }
-
-//void chatScreen::refreshPanel(int option){
-//    while(true){
-//        std::cout << "5 seconds" << std::endl;
-
-//        switch(option){
-//            case 1:
-//                ui->labelChatName->setText(ui->labelChatName->text() + " [online]");
-//                break;
-//            case 2:
-//                std::terminate();
-//                break;
-//            default:
-//                break;
-//        }
-
-//        std::this_thread::sleep_for(std::chrono::seconds(5));
-//    }
-//}
 
 void chatScreen::fillListWidgets(){
     ui->listWidgetAdmin->clear();
@@ -406,4 +373,28 @@ void chatScreen::on_buttonRefresh_clicked()
         fillListWidgets();
         checkPermissionLevel();
     }    
+
+    std::vector<QString>::iterator searchGroups;
+
+    QString groupName;
+
+    QSqlQuery query;
+    query.prepare("SELECT topic "
+                  "FROM groupChat "
+                  "WHERE memberID = :currentID");
+
+    query.bindValue(":currentID", user.getUserID());
+
+    query.exec();
+
+    while (query.next()) {
+        groupName = query.value(0).toString();
+        searchGroups = std::find(groupsInComboBox.begin(), groupsInComboBox.end(), groupName);
+
+        if (searchGroups == groupsInComboBox.end()) {
+            groupsInComboBox.push_back(groupName);
+            ui->comboBoxGroupChats->addItem(groupName);
+        }
+    }
+
 }

@@ -4,6 +4,7 @@
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QMessageBox>
+#include <stdexcept>
 
 #include <QWidget>
 
@@ -26,9 +27,7 @@ private slots:
 
     void on_registerButton_clicked();
 
-//    std::string encryptPassword(std::string password);
-
-//    std::string decryptPassword(std::string password);
+    QString encryptPassword(QString password);
 
 private:
     Ui::loginScreen *ui;

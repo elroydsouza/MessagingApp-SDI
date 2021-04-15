@@ -55,45 +55,50 @@ void loginScreen::on_loginButton_clicked()
         QString username = ui->username->text();
         QString password = ui->password->text();
 
-        QSqlQuery query;
-        query.prepare(QString("SELECT * FROM users "
-                              "WHERE username = :username "
-                              "AND password = :password"));
+        try {
+            password = encryptPassword(password);
 
-        query.bindValue(":username",username);
-        query.bindValue(":password",password);
+            QSqlQuery query;
+            query.prepare(QString("SELECT * FROM users "
+                                  "WHERE username = :username "
+                                  "AND password = :password"));
 
-        query.exec();
+            query.bindValue(":username",username);
+            query.bindValue(":password",password);
 
-        if(query.next()){
-             QMessageBox::information(this,"Success","You are logged in");
+            query.exec();
 
-             QSqlQuery query;
-             query.prepare(QString("SELECT userID, firstName, lastName "
-                                   "FROM users "
-                                   "WHERE username = :username"));
+            if(query.next()){
+                 QMessageBox::information(this,"Success","You are logged in");
 
-             query.bindValue(":username",username);
-             query.exec();
-             query.next();
+                 QSqlQuery query;
+                 query.prepare(QString("SELECT userID, firstName, lastName "
+                                       "FROM users "
+                                       "WHERE username = :username"));
 
-             int userID = query.value(0).toInt();
-             QString firstName = query.value(1).toString();
-             QString lastName = query.value(2).toString();
+                 query.bindValue(":username",username);
+                 query.exec();
+                 query.next();
 
-             User user = User();
-             user.setUser(userID, username, firstName, lastName);
+                 int userID = query.value(0).toInt();
+                 QString firstName = query.value(1).toString();
+                 QString lastName = query.value(2).toString();
 
-             chatScreen *openChat = new chatScreen;
-             openChat->acceptUser(user);
-             openChat->show();
-             openChat->run();
-             close();
+                 User user = User();
+                 user.setUser(userID, username, firstName, lastName);
 
-         } else {
-             QMessageBox::information(this,"Error","Wrong password or username");
-         }
+                 chatScreen *openChat = new chatScreen;
+                 openChat->acceptUser(user);
+                 openChat->show();
+                 openChat->run();
+                 close();
 
+             } else {
+                 QMessageBox::information(this,"Error","Wrong password or username");
+             }
+        } catch (std::invalid_argument& ia) {
+            QMessageBox::information(this,"Error","Invalid character in password!");
+        }
 
     } else {
         QMessageBox::information(this,"Not Connected","Database is not connected");
@@ -120,54 +125,61 @@ void loginScreen::on_registerButton_clicked()
         QString registerFirstName = ui->registerFirstName->text();
         QString registerLastName = ui->registerLastName->text();
 
-        QSqlQuery query;
-        query.prepare(QString("INSERT INTO users (username, password, firstName, lastName)"
-                              "VALUES (:registerUsername, :registerPassword, :registerFirstName, :registerLastName)"));
+        try {
+            registerPassword = encryptPassword(registerPassword);
 
-        query.bindValue(":registerUsername",registerUsername);
-        query.bindValue(":registerPassword",registerPassword);
-        query.bindValue(":registerFirstName",registerFirstName);
-        query.bindValue(":registerLastName",registerLastName);
+            QSqlQuery query;
+            query.prepare(QString("INSERT INTO users (username, password, firstName, lastName)"
+                                  "VALUES (:registerUsername, :registerPassword, :registerFirstName, :registerLastName)"));
 
-        if(query.exec()){
-            ui->registerUsername->clear();
-            ui->registerPassword->clear();
-            ui->registerFirstName->clear();
-            ui->registerLastName->clear();
+            query.bindValue(":registerUsername",registerUsername);
+            query.bindValue(":registerPassword",registerPassword);
+            query.bindValue(":registerFirstName",registerFirstName);
+            query.bindValue(":registerLastName",registerLastName);
 
-            QMessageBox::information(this,"Registration successful","Account has been created");
+            if(query.exec()){
+                ui->registerUsername->clear();
+                ui->registerPassword->clear();
+                ui->registerFirstName->clear();
+                ui->registerLastName->clear();
 
-        } else {
-            QMessageBox::information(this,"Registration unsuccessful","Account was not created");
+                QMessageBox::information(this,"Registration successful","Account has been created");
+
+                db.close();
+                QSqlDatabase::removeDatabase("QMYSQL");
+            } else {
+                QMessageBox::information(this,"Registration unsuccessful","Account was not created");
+
+                db.close();
+                QSqlDatabase::removeDatabase("QMYSQL");
+            }
+
+        } catch (std::invalid_argument& ia) {
+            QMessageBox::information(this,"Error","Invalid character in password!");
         }
     }
-
 }
 
-//std::string encryptPassword(std::string password) {
-//    int key = 2;
-//    std::string encryptedPassword;
+QString loginScreen::encryptPassword(QString password) {
+    int key = 2;
+    std::string encryptedPassword;
 
-//    for (int charCodeValue : password) {
-//        charCodeValue = charCodeValue + key;
-//        encryptedPassword.push_back(charCodeValue);
-//    }
+    std::string standardPassword = password.toStdString();
 
-//    return encryptedPassword;
-//}
+    for (int charCodeValue : standardPassword) {
+        charCodeValue = charCodeValue + key;
 
-//std::string decryptPassword(std::string password) {
+        if (charCodeValue >= 128){
+            throw std::invalid_argument("Invalid character!");
+        }
+        encryptedPassword.push_back(charCodeValue);
 
-//    int key = 2;
-//    std::string decryptedPassword;
+    }
 
-//    for (int charCodeValue : password) {
-//        charCodeValue = charCodeValue - key;
-//        decryptedPassword.push_back(charCodeValue);
-//    }
+    password = QString::fromStdString(encryptedPassword);
 
-//    return decryptedPassword;
-//}
+    return password;
+}
 
 void loginScreen::on_shutdownButton_clicked()
 {

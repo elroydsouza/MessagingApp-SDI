@@ -40,8 +40,6 @@ private slots:
 
     void on_buttonDemote_clicked();
 
-    //void refreshPanel(int option);
-
     void fillListWidgets();
 
     void checkPermissionLevel();
@@ -56,7 +54,7 @@ private:
     QString messageContents;
     QString preparedMessage;
     QString currentGroup;
-    //int option;
+    std::vector<QString> groupsInComboBox;
 };
 
 #endif // CHATSCREEN_H
