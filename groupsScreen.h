@@ -26,6 +26,8 @@ private slots:
 
     void on_buttonCreateGroup_clicked();
 
+    void on_buttonExit_clicked();
+
 private:
     Ui::groupsScreen *ui;
     User user;

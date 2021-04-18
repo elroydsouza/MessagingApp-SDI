@@ -27,14 +27,19 @@ void chatScreen::run() {
     //Fills combo box Users
     QString contactUsername;
 
-    QSqlQuery query("SELECT username "
-                    "FROM users");
+    QSqlQuery query;
+    query.prepare("SELECT contactUsername "
+                  "FROM contacts "
+                  "WHERE currentUserID = :currentUserID");
+
+    query.bindValue(":currentUserID", user.getUserID());
+
+    query.exec();
 
     while (query.next()) {
         contactUsername = query.value(0).toString();
-        if (contactUsername != user.getUsername()){
-            ui->comboBoxUsers->addItem(contactUsername);
-        }
+        contactsInComboBox.push_back(contactUsername);
+        ui->comboBoxContacts->addItem(contactUsername);
     }
 
     //Fills combo box Groups
@@ -80,12 +85,12 @@ chatScreen::~chatScreen()
 
 void chatScreen::on_buttonUserChat_clicked()
 {
-    QString selectedUser = ui->comboBoxUsers->currentText();
+    QString selectedUser = ui->comboBoxContacts->currentText();
 
     if (selectedUser.toStdString() != "Select a User"){
         if(client->state() == QMqttClient::Disconnected){
             ui->labelChatName->setText(selectedUser);
-            ui->comboBoxUsers->setEnabled(false);
+            ui->comboBoxContacts->setEnabled(false);
             ui->comboBoxGroupChats->setEnabled(false);
             ui->buttonGroupChat->setEnabled(false);
             ui->buttonUserChat->setText("Stop Chatting");
@@ -116,56 +121,27 @@ void chatScreen::on_buttonUserChat_clicked()
             query.exec();
             query.next();
 
-            if(query.first()){
-                topic = query.value(0).toString();
+            topic = query.value(0).toString();
 
-                auto subscription = client->subscribe(topic, 1);
-                if (!subscription) {
-                    QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
-                    return;
-                }
-
-                QString online = user.getUsername() + " is online!";
-
-                if(client->publish(topic, online.toUtf8()) == -1){
-                    QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
-                }
-
-                //ui->labelChatName->setText(selectedUser + " [online]");
-
-            } else {
-                const QString generatedTopic = user.getUsername() + selectedUser;
-
-                query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
-                              "VALUES (:currentUserID, :contactID, :generatedTopic)");
-                query.bindValue(":currentUserID", currentUserID);
-                query.bindValue(":contactID", contactID);
-                query.bindValue(":generatedTopic", generatedTopic);
-
-                query.exec();
-
-                query.prepare("INSERT INTO contacts (currentUserID, contactID, topic) "
-                              "VALUES (:contactID, :currentUserID, :generatedTopic)");
-                query.bindValue(":contactID", contactID);
-                query.bindValue(":currentUserID", currentUserID);
-                query.bindValue(":generatedTopic", generatedTopic);
-
-                query.exec();
-
-                topic = generatedTopic;
-
-                auto subscription = client->subscribe(topic, 1);
-                if (!subscription) {
-                    QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
-                    return;
-                }
+            auto subscription = client->subscribe(topic, 1);
+            if (!subscription) {
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
+                return;
             }
+
+            QString online = user.getUsername() + " is online!";
+
+            if(client->publish(topic, online.toUtf8()) == -1){
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+            }
+
+            //ui->labelChatName->setText(selectedUser + " [online]");
 
         } else {
             ui->labelChatName->setText("Select a user");
             ui->buttonUserChat->setText("Chat");
 
-            ui->comboBoxUsers->setEnabled(true);
+            ui->comboBoxContacts->setEnabled(true);
             ui->comboBoxGroupChats->setEnabled(true);
             ui->buttonGroupChat->setEnabled(true);
 
@@ -182,7 +158,7 @@ void chatScreen::on_buttonGroupChat_clicked()
     if (topic.toStdString() != "Select a Group"){
         if(client->state() == QMqttClient::Disconnected){
             ui->labelChatName->setText(topic);
-            ui->comboBoxUsers->setEnabled(false);
+            ui->comboBoxContacts->setEnabled(false);
             ui->comboBoxGroupChats->setEnabled(false);
             ui->buttonUserChat->setEnabled(false);
             ui->buttonGroupChat->setText("Stop Chatting");
@@ -205,7 +181,7 @@ void chatScreen::on_buttonGroupChat_clicked()
             ui->labelChatName->setText("Select a Chat");
             ui->buttonGroupChat->setText("Chat");
 
-            ui->comboBoxUsers->setEnabled(true);
+            ui->comboBoxContacts->setEnabled(true);
             ui->comboBoxGroupChats->setEnabled(true);
             ui->buttonUserChat->setEnabled(true);
 
@@ -302,8 +278,9 @@ void chatScreen::fillListWidgets(){
     ui->listWidgetModerators->clear();
     ui->listWidgetMembers->clear();
 
-    QString admin;
     QSqlQuery query;
+
+    QString admin;
     query.prepare("SELECT memberUsername "
                   "FROM groupChat "
                   "WHERE topic = :currentGroup "
@@ -372,10 +349,9 @@ void chatScreen::on_buttonRefresh_clicked()
     if (groupChatActive == "Stop Chatting"){
         fillListWidgets();
         checkPermissionLevel();
-    }    
+    }
 
     std::vector<QString>::iterator searchGroups;
-
     QString groupName;
 
     QSqlQuery query;
@@ -397,4 +373,32 @@ void chatScreen::on_buttonRefresh_clicked()
         }
     }
 
+    std::vector<QString>::iterator searchContacts;
+    QString contactUsername;
+
+    query.prepare("SELECT contactUsername "
+                  "FROM contacts "
+                  "WHERE currentUserID = :currentUserID");
+
+    query.bindValue(":currentUserID", user.getUserID());
+
+    query.exec();
+
+    ui->comboBoxContacts->clear();
+    ui->comboBoxContacts->addItem("Select a User");
+    while (query.next()) {
+        contactUsername = query.value(0).toString();
+        searchContacts = std::find(contactsInComboBox.begin(), contactsInComboBox.end(), contactUsername);
+
+        contactsInComboBox.push_back(contactUsername);
+        ui->comboBoxContacts->addItem(contactUsername);
+    }
+}
+
+void chatScreen::on_buttonAddContact_clicked()
+{
+    contactsScreen *openContactsScreen = new contactsScreen;
+    openContactsScreen->acceptUser(user);
+    openContactsScreen->show();
+    openContactsScreen->run();
 }

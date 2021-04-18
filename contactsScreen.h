@@ -24,7 +24,14 @@ public:
     ~contactsScreen();
 
 private slots:
+
     void on_buttonAddContact_clicked();
+
+    void on_deleteContact_clicked();
+
+    void fillListWidgets();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::contactsScreen *ui;

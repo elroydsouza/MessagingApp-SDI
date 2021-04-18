@@ -77,7 +77,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBoxUsers">
+       <widget class="QComboBox" name="comboBoxContacts">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -254,6 +254,13 @@
        <widget class="QPushButton" name="buttonCreateGroup">
         <property name="text">
          <string>Create Group</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="buttonAddContact">
+        <property name="text">
+         <string>Add Contact</string>
         </property>
        </widget>
       </item>

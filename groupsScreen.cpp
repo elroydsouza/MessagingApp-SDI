@@ -90,3 +90,8 @@ void groupsScreen::on_buttonCreateGroup_clicked()
     this->hide();
     close();
 }
+
+void groupsScreen::on_buttonExit_clicked()
+{
+    close();
+}

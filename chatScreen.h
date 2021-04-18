@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include "user.h"
 #include "groupsScreen.h"
+#include "contactsScreen.h"
 
 namespace Ui {
 class chatScreen;
@@ -46,6 +47,8 @@ private slots:
 
     void on_buttonRefresh_clicked();
 
+    void on_buttonAddContact_clicked();
+
 private:
     Ui::chatScreen *ui;
     QMqttClient *client;
@@ -55,6 +58,7 @@ private:
     QString preparedMessage;
     QString currentGroup;
     std::vector<QString> groupsInComboBox;
+    std::vector<QString> contactsInComboBox;
 };
 
 #endif // CHATSCREEN_H
