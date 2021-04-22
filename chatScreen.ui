@@ -124,6 +124,16 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QListWidget" name="listWidgetActivity">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>80</height>
+            </size>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

@@ -61,11 +61,51 @@ void chatScreen::run() {
 
     //Sending of the message
     connect(client, &QMqttClient::messageReceived, this, [this](const QByteArray &message) {
-        const QString messageContent = QTime::currentTime().toString()
-                    + ": "
-                    + message
-                    + QLatin1Char('\n');
-        ui->messageLog->insertPlainText(messageContent);
+        if (message == "checkActivity"){
+            ui->listWidgetActivity->clear();
+            messageUsers.clear();
+
+            QString online = "ca/" + user.getUsername();
+
+            if(client->publish(topic, online.toUtf8()) == -1){
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+            }
+        } else if(message.startsWith("ca/")){
+            std::string messageSTD = message.toStdString();
+            QString activeUser = QString::fromStdString(messageSTD.substr(3));
+
+            messageUsers.push_back(activeUser);
+
+            ui->listWidgetActivity->clear();
+
+            for(QString user : messageUsers){
+                ui->listWidgetActivity->addItem(user + " is active!");
+            }
+
+        } else if(message.startsWith("dc/")){
+            std::string messageSTD = message.toStdString();
+            QString activeUser = QString::fromStdString(messageSTD.substr(3));
+
+            std::vector<QString>::iterator searchActivity;
+            searchActivity = std::find(messageUsers.begin(), messageUsers.end(), activeUser);
+
+            if (searchActivity != messageUsers.end()){
+                messageUsers.erase(searchActivity);
+            }
+
+            ui->listWidgetActivity->clear();
+
+            for(QString user : messageUsers){
+                ui->listWidgetActivity->addItem(user + " is active!");
+            }
+
+        } else {
+            const QString messageContent = QTime::currentTime().toString()
+                        + ": "
+                        + message
+                        + QLatin1Char('\n');
+            ui->messageLog->insertPlainText(messageContent);
+        }
     });
 
     //Set promote/demote buttons visibility on load
@@ -125,19 +165,24 @@ void chatScreen::on_buttonUserChat_clicked()
 
             auto subscription = client->subscribe(topic, 1);
             if (!subscription) {
-                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
+                QMessageBox::critical(this, QLatin1String("Error!"), QLatin1String("Could not connect to chat!"));
                 return;
             }
 
-            QString online = user.getUsername() + " is online!";
-
-            if(client->publish(topic, online.toUtf8()) == -1){
+            QString connectUser = "checkActivity";
+            if(client->publish(topic, connectUser.toUtf8()) == -1){
                 QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
             }
 
-            //ui->labelChatName->setText(selectedUser + " [online]");
-
         } else {
+
+            QString disconnectUser = "dc/" + user.getUsername();
+            if(client->publish(topic, disconnectUser.toUtf8()) == -1){
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+            }
+
+            ui->listWidgetActivity->clear();
+
             ui->labelChatName->setText("Select a user");
             ui->buttonUserChat->setText("Chat");
 
@@ -174,10 +219,23 @@ void chatScreen::on_buttonGroupChat_clicked()
                 return;
             }
 
+            QString connectUser = "checkActivity";
+            if(client->publish(topic, connectUser.toUtf8()) == -1){
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+            }
+
             fillListWidgets();
             checkPermissionLevel();
 
         } else {
+
+            QString disconnectUser = "dc/" + user.getUsername();
+            if(client->publish(topic, disconnectUser.toUtf8()) == -1){
+                QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
+            }
+
+            ui->listWidgetActivity->clear();
+
             ui->labelChatName->setText("Select a Chat");
             ui->buttonGroupChat->setText("Chat");
 

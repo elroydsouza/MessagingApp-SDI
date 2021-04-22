@@ -62,6 +62,7 @@ private:
     QString currentGroup;
     std::vector<QString> groupsInComboBox;
     std::vector<QString> contactsInComboBox;
+    std::vector<QString> messageUsers;
 };
 
 #endif // CHATSCREEN_H
