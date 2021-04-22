@@ -22,7 +22,6 @@ contactsScreen::~contactsScreen()
     delete ui;
 }
 
-
 void contactsScreen::acceptUser(User _user){
     user = _user;
 }

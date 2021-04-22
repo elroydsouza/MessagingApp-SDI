@@ -16,15 +16,15 @@ public:
         currentUsername = setUsername;
         currentFirstName = setFirstName;
         currentLastName = setLastName;
-        currentFullName = setFirstName + " " + setLastName;
     }
+    void updateFirstName(QString name);
+    void updateLastName(QString name);
 
 private:
     int currentUserID;
     QString currentUsername;
     QString currentFirstName;
     QString currentLastName;
-    QString currentFullName;
 };
 
 #endif // USER_H

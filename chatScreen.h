@@ -9,6 +9,7 @@
 #include "user.h"
 #include "groupsScreen.h"
 #include "contactsScreen.h"
+#include "profileScreen.h"
 
 namespace Ui {
 class chatScreen;
@@ -48,6 +49,8 @@ private slots:
     void on_buttonRefresh_clicked();
 
     void on_buttonAddContact_clicked();
+
+    void on_buttonProfile_clicked();
 
 private:
     Ui::chatScreen *ui;

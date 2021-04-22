@@ -21,13 +21,15 @@ SOURCES += \
     groupsScreen.cpp \
     loginScreen.cpp \
     main.cpp \
+    profileScreen.cpp \
     user.cpp
 
 HEADERS += \
     chatScreen.h \
     contactsScreen.h \
     groupsScreen.h \
-    loginScreen.h \ \
+    loginScreen.h \
+    profileScreen.h \
     user.h
 
 FORMS += \
@@ -35,6 +37,7 @@ FORMS += \
     contactsScreen.ui \
     groupsScreen.ui \
     loginScreen.ui \
+    profileScreen.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

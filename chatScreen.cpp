@@ -402,3 +402,12 @@ void chatScreen::on_buttonAddContact_clicked()
     openContactsScreen->show();
     openContactsScreen->run();
 }
+
+void chatScreen::on_buttonProfile_clicked()
+{
+    profileScreen *openProfileScreen = new profileScreen;
+    openProfileScreen->acceptUser(user);
+    openProfileScreen->show();
+    openProfileScreen->run();
+    close();
+}

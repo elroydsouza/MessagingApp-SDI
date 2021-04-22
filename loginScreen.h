@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include <QMessageBox>
 #include <stdexcept>
+#include "chatScreen.h"
 
 #include <QWidget>
 
