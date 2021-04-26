@@ -1,6 +1,7 @@
 #include "chatScreen.h"
 #include "ui_chatScreen.h"
 #include "user.h"
+#include "loginScreen.h"
 
 #include <iostream>
 #include <QTime>
@@ -22,7 +23,7 @@ void chatScreen::run() {
     client -> setHostname(hostName);
     client -> setPort(port);
 
-    connect(client, &QMqttClient::stateChanged, this, &chatScreen::updateLogStateChange); // Remove later
+    connect(client, &QMqttClient::stateChanged, this, &chatScreen::connectedDisconnected);
 
     //Fills combo box Users
     QString contactUsername;
@@ -108,6 +109,14 @@ void chatScreen::run() {
         }
     });
 
+    connect(client, &QMqttClient::pingResponseReceived, this, [this]() {
+        minutesInactive++;
+        if (minutesInactive >= 2){
+            QMessageBox::information(this,"Disconnected!","You have been logged out for inactivity within a chat room.");
+            logout();
+        }
+    });
+
     //Set promote/demote buttons visibility on load
     ui->buttonPromote->setEnabled(false);
     ui->buttonDemote->setEnabled(false);
@@ -115,7 +124,25 @@ void chatScreen::run() {
     //Set verticalLayout for the 3 right hand panels hidden on load
     ui->verticalLayout3Panel_2->hide();
 
-    updateLogStateChange();
+    ui->messageLogPanel->setTitle("Select a Group or User:");
+    ui->labelUsername->setText(user.getUsername());
+
+    if(user.getProfilePicture() == 1){
+        ui->buttonUserPicture->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-1.png"));
+        ui->buttonUserPicture->setIconSize(QSize(50,50));
+    } else if(user.getProfilePicture() == 2){
+        ui->buttonUserPicture->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-2.png"));
+        ui->buttonUserPicture->setIconSize(QSize(50,50));
+    } else if(user.getProfilePicture() == 3){
+        ui->buttonUserPicture->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-3.png"));
+        ui->buttonUserPicture->setIconSize(QSize(50,50));
+    } else if(user.getProfilePicture() == 4){
+       ui->buttonUserPicture->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-4.png"));
+       ui->buttonUserPicture->setIconSize(QSize(50,50));
+    }
+
+    connectedDisconnected();
+    ui->messageLog->clear();
 }
 
 chatScreen::~chatScreen()
@@ -128,11 +155,13 @@ void chatScreen::on_buttonUserChat_clicked()
     QString selectedUser = ui->comboBoxContacts->currentText();
 
     if (selectedUser.toStdString() != "Select a User"){
+        otherUser = ui->comboBoxContacts->currentText();
         if(client->state() == QMqttClient::Disconnected){
-            ui->labelChatName->setText(selectedUser);
+            ui->messageLogPanel->setTitle("You're chatting with " + selectedUser);
             ui->comboBoxContacts->setEnabled(false);
             ui->comboBoxGroupChats->setEnabled(false);
             ui->buttonGroupChat->setEnabled(false);
+            ui->buttonAddContact->setEnabled(false);
             ui->buttonUserChat->setText("Stop Chatting");
             client->connectToHost();
 
@@ -175,7 +204,6 @@ void chatScreen::on_buttonUserChat_clicked()
             }
 
         } else {
-
             QString disconnectUser = "dc/" + user.getUsername();
             if(client->publish(topic, disconnectUser.toUtf8()) == -1){
                 QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
@@ -183,17 +211,20 @@ void chatScreen::on_buttonUserChat_clicked()
 
             ui->listWidgetActivity->clear();
 
-            ui->labelChatName->setText("Select a user");
+            ui->messageLogPanel->setTitle("Select a Group or User:");
             ui->buttonUserChat->setText("Chat");
 
             ui->comboBoxContacts->setEnabled(true);
             ui->comboBoxGroupChats->setEnabled(true);
             ui->buttonGroupChat->setEnabled(true);
+            ui->buttonAddContact->setEnabled(true);
 
             client->disconnectFromHost();
+
+            resetInactivityTimer();
         }
     }
-
+    refresh();
 }
 
 void chatScreen::on_buttonGroupChat_clicked()
@@ -202,7 +233,7 @@ void chatScreen::on_buttonGroupChat_clicked()
 
     if (topic.toStdString() != "Select a Group"){
         if(client->state() == QMqttClient::Disconnected){
-            ui->labelChatName->setText(topic);
+            ui->messageLogPanel->setTitle("You're chatting in " + topic);
             ui->comboBoxContacts->setEnabled(false);
             ui->comboBoxGroupChats->setEnabled(false);
             ui->buttonUserChat->setEnabled(false);
@@ -236,7 +267,7 @@ void chatScreen::on_buttonGroupChat_clicked()
 
             ui->listWidgetActivity->clear();
 
-            ui->labelChatName->setText("Select a Chat");
+            ui->messageLogPanel->setTitle("Select a Group or User:");
             ui->buttonGroupChat->setText("Chat");
 
             ui->comboBoxContacts->setEnabled(true);
@@ -250,8 +281,11 @@ void chatScreen::on_buttonGroupChat_clicked()
             ui->listWidgetMembers->clear();
 
             client->disconnectFromHost();
+
+            resetInactivityTimer();
         }
     }
+    refresh();
 }
 
 void chatScreen::on_buttonSend_clicked()
@@ -262,25 +296,26 @@ void chatScreen::on_buttonSend_clicked()
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
     }
     ui->lineEditMessageContent->clear();
+    refresh();
+    resetInactivityTimer();
 }
 
-void chatScreen::updateLogStateChange() ////////////////////////////////////// Remove later
+void chatScreen::connectedDisconnected()
 {
-    const QString content = QTime::currentTime().toString()
-                    + QLatin1String(": State Change ")
-                    + QString::number(client->state())
-                    + QLatin1Char('\n');
-    ui->messageLog->insertPlainText(content);
+    if(client->state() == 2){
+        ui->messageLog->insertPlainText("Connected to chat!\n");
+    } else if(client->state() == 0){
+        ui->messageLog->insertPlainText("Disconnected from chat!\n");
+    }
 }
 
 void chatScreen::acceptUser(User _user){
     user = _user;
 }
 
-void chatScreen::on_buttonExit_clicked()
+void chatScreen::on_buttonLogout_clicked()
 {
-    this->hide();
-    close();
+    logout();
 }
 
 void chatScreen::on_buttonCreateGroup_clicked()
@@ -289,6 +324,8 @@ void chatScreen::on_buttonCreateGroup_clicked()
     openGroupScreen->acceptUser(user);
     openGroupScreen->show();
     openGroupScreen->run();
+    refresh();
+    resetInactivityTimer();
 }
 
 void chatScreen::on_buttonPromote_clicked()
@@ -309,6 +346,7 @@ void chatScreen::on_buttonPromote_clicked()
         fillListWidgets();
         checkPermissionLevel();
     }
+    resetInactivityTimer();
 }
 
 void chatScreen::on_buttonDemote_clicked()
@@ -329,6 +367,7 @@ void chatScreen::on_buttonDemote_clicked()
         fillListWidgets();
         checkPermissionLevel();
     }
+    resetInactivityTimer();
 }
 
 void chatScreen::fillListWidgets(){
@@ -403,6 +442,45 @@ void chatScreen::checkPermissionLevel(){
 
 void chatScreen::on_buttonRefresh_clicked()
 {
+    resetInactivityTimer();
+    refresh();
+}
+
+void chatScreen::on_buttonAddContact_clicked()
+{
+    contactsScreen *openContactsScreen = new contactsScreen;
+    openContactsScreen->acceptUser(user);
+    openContactsScreen->show();
+    openContactsScreen->run();
+    refresh();
+    resetInactivityTimer();
+}
+
+void chatScreen::on_buttonProfile_clicked()
+{
+    profileScreen *openProfileScreen = new profileScreen;
+    openProfileScreen->acceptUser(user);
+    openProfileScreen->show();
+    openProfileScreen->run();
+    close();
+}
+
+void chatScreen::logout(){
+    QString disconnectUser = "dc/" + user.getUsername();
+    client->publish(topic, disconnectUser.toUtf8());
+
+    loginScreen *openLoginScreen = new loginScreen;
+    openLoginScreen->show();
+
+    this->hide();
+    close();
+}
+
+void chatScreen::resetInactivityTimer(){
+    minutesInactive = 0;
+}
+
+void chatScreen::refresh(){
     QString groupChatActive = ui->buttonGroupChat->text();
     if (groupChatActive == "Stop Chatting"){
         fillListWidgets();
@@ -451,21 +529,10 @@ void chatScreen::on_buttonRefresh_clicked()
         contactsInComboBox.push_back(contactUsername);
         ui->comboBoxContacts->addItem(contactUsername);
     }
+    ui->comboBoxContacts->setCurrentText(otherUser);
 }
 
-void chatScreen::on_buttonAddContact_clicked()
+void chatScreen::on_buttonUserPicture_clicked()
 {
-    contactsScreen *openContactsScreen = new contactsScreen;
-    openContactsScreen->acceptUser(user);
-    openContactsScreen->show();
-    openContactsScreen->run();
-}
-
-void chatScreen::on_buttonProfile_clicked()
-{
-    profileScreen *openProfileScreen = new profileScreen;
-    openProfileScreen->acceptUser(user);
-    openProfileScreen->show();
-    openProfileScreen->run();
-    close();
+    on_buttonProfile_clicked();
 }

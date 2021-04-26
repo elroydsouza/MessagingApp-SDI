@@ -29,6 +29,14 @@ private slots:
 
     QString encryptPassword(QString password);
 
+    void on_buttonPicture1_clicked();
+
+    void on_buttonPicture2_clicked();
+
+    void on_buttonPicture3_clicked();
+
+    void on_buttonPicture4_clicked();
+
 private:
     Ui::profileScreen *ui;
     User user;

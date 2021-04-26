@@ -24,11 +24,11 @@ loginScreen::loginScreen(QWidget *parent) :
     ui->registerFirstName->setPlaceholderText("Enter First Name");
     ui->registerLastName->setPlaceholderText("Enter Last Name");
 
-    timer_ls = new QTimer(this);
-    QObject::connect(timer_ls, SIGNAL(timeout()), this, SLOT(UpdateTime()));
-    timer_ls -> start(1000);
+//    timer_ls = new QTimer(this);
+//    QObject::connect(timer_ls, SIGNAL(timeout()), this, SLOT(UpdateTime()));
+//    timer_ls -> start(1000);
 
-    ui->currentDateTime->setText(QTime::currentTime().toString("hh:mm:ss"));
+//    ui->currentDateTime->setText(QTime::currentTime().toString("hh:mm:ss"));
 }
 
 loginScreen::~loginScreen()
@@ -72,7 +72,7 @@ void loginScreen::on_loginButton_clicked()
                  QMessageBox::information(this,"Success","You are logged in");
 
                  QSqlQuery query;
-                 query.prepare(QString("SELECT userID, firstName, lastName "
+                 query.prepare(QString("SELECT userID, firstName, lastName, pfpNumber "
                                        "FROM users "
                                        "WHERE username = :username"));
 
@@ -83,9 +83,10 @@ void loginScreen::on_loginButton_clicked()
                  int userID = query.value(0).toInt();
                  QString firstName = query.value(1).toString();
                  QString lastName = query.value(2).toString();
+                 int profilePicture = query.value(3).toInt();
 
                  User user = User();
-                 user.setUser(userID, username, firstName, lastName);
+                 user.setUser(userID, username, firstName, lastName, profilePicture);
 
                  chatScreen *openChat = new chatScreen;
                  openChat->acceptUser(user);

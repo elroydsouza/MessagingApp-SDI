@@ -20,6 +20,10 @@ QString User::getLastName() {
     return currentLastName;
 };
 
+int User::getProfilePicture(){
+    return currentProfilePicture;
+}
+
 QString User::getFullName() {
     QString currentFullName = getFirstName() + " " + getLastName();
     return currentFullName;
@@ -32,3 +36,7 @@ void User::updateFirstName(QString name){
 void User::updateLastName(QString name){
     currentLastName = name;
 };
+
+void User::updateProfilePicture(int picture){
+    currentProfilePicture = picture;
+}

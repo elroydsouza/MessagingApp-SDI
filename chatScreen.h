@@ -26,13 +26,13 @@ public:
     ~chatScreen();
 
 private slots:
-    void updateLogStateChange();
+    void connectedDisconnected();
 
     void on_buttonSend_clicked();
 
     void on_buttonUserChat_clicked();
 
-    void on_buttonExit_clicked();
+    void on_buttonLogout_clicked();
 
     void on_buttonCreateGroup_clicked();
 
@@ -52,6 +52,14 @@ private slots:
 
     void on_buttonProfile_clicked();
 
+    void logout();
+
+    void resetInactivityTimer();
+
+    void refresh();
+
+    void on_buttonUserPicture_clicked();
+
 private:
     Ui::chatScreen *ui;
     QMqttClient *client;
@@ -63,6 +71,8 @@ private:
     std::vector<QString> groupsInComboBox;
     std::vector<QString> contactsInComboBox;
     std::vector<QString> messageUsers;
+    int minutesInactive = 0;
+    QString otherUser;
 };
 
 #endif // CHATSCREEN_H

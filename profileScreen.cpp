@@ -15,6 +15,18 @@ void profileScreen::run(){
 
     ui->lineEditFirstName->setText(user.getFirstName());
     ui->lineEditLastName->setText(user.getLastName());
+
+    ui->buttonPicture1->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-1.png"));
+    ui->buttonPicture1->setIconSize(QSize(50,50));
+
+    ui->buttonPicture2->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-2.png"));
+    ui->buttonPicture2->setIconSize(QSize(50,50));
+
+    ui->buttonPicture3->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-3.png"));
+    ui->buttonPicture3->setIconSize(QSize(50,50));
+
+    ui->buttonPicture4->setIcon(QIcon("../MessagingApplication/icons/SDI-photo-4.png"));
+    ui->buttonPicture4->setIconSize(QSize(50,50));
 }
 
 profileScreen::~profileScreen()
@@ -118,4 +130,64 @@ void profileScreen::on_buttonConfirm_clicked()
     openChat->show();
     openChat->run();
     close();
+}
+
+void profileScreen::on_buttonPicture1_clicked()
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE users "
+                  "SET pfpNumber = 1 "
+                  "WHERE userID = :userID");
+    query.bindValue(":userID", user.getUserID());
+    query.exec();
+
+    user.updateProfilePicture(1);
+
+    QMessageBox::information(this,"Updated!","Your profile picture has been updated!");
+}
+
+void profileScreen::on_buttonPicture2_clicked()
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE users "
+                  "SET pfpNumber = 2 "
+                  "WHERE userID = :userID");
+    query.bindValue(":userID", user.getUserID());
+    query.exec();
+
+    user.updateProfilePicture(2);
+
+    QMessageBox::information(this,"Updated!","Your profile picture has been updated!");
+}
+
+void profileScreen::on_buttonPicture3_clicked()
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE users "
+                  "SET pfpNumber = 3 "
+                  "WHERE userID = :userID");
+    query.bindValue(":userID", user.getUserID());
+    query.exec();
+
+    user.updateProfilePicture(3);
+
+    QMessageBox::information(this,"Updated!","Your profile picture has been updated!");
+}
+
+void profileScreen::on_buttonPicture4_clicked()
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE users "
+                  "SET pfpNumber = 4 "
+                  "WHERE userID = :userID");
+    query.bindValue(":userID", user.getUserID());
+    query.exec();
+
+    user.updateProfilePicture(4);
+
+    QMessageBox::information(this,"Updated!","Your profile picture has been updated!");
 }
