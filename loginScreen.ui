@@ -52,34 +52,15 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label_19">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QPushButton" name="buttonLogo">
        <property name="minimumSize">
         <size>
          <width>150</width>
          <height>150</height>
         </size>
        </property>
-       <property name="font">
-        <font>
-         <pointsize>22</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: 1px solid;</string>
-       </property>
        <property name="text">
         <string/>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>

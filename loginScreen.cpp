@@ -19,6 +19,9 @@ loginScreen::loginScreen(QWidget *parent) :
     this->setWindowFlags(((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowCloseButtonHint));
     this->setWindowTitle("Login or Register");
 
+    ui->buttonLogo->setIcon(QIcon("../MessagingApplication/icons/messageAppLogo.png"));
+    ui->buttonLogo->setIconSize(QSize(140,150));
+
     ui->username->setPlaceholderText("Enter Username");
     ui->password->setPlaceholderText("Enter Password");
 
@@ -26,12 +29,6 @@ loginScreen::loginScreen(QWidget *parent) :
     ui->registerPassword->setPlaceholderText("Enter Password");
     ui->registerFirstName->setPlaceholderText("Enter First Name");
     ui->registerLastName->setPlaceholderText("Enter Last Name");
-
-//    timer_ls = new QTimer(this);
-//    QObject::connect(timer_ls, SIGNAL(timeout()), this, SLOT(UpdateTime()));
-//    timer_ls -> start(1000);
-
-//    ui->currentDateTime->setText(QTime::currentTime().toString("hh:mm:ss"));
 }
 
 loginScreen::~loginScreen()
