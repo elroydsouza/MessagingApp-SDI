@@ -8,9 +8,11 @@ groupsScreen::groupsScreen(QWidget *parent) :
     ui(new Ui::groupsScreen)
 {
     ui->setupUi(this);
+    this->setWindowFlags(((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowCloseButtonHint));
 }
 
 void groupsScreen::run() {
+    this->setWindowTitle("Create Group");
 
     QString admin = user.getUsername();
     QString member;

@@ -13,9 +13,12 @@ chatScreen::chatScreen(QWidget *parent) :
     ui(new Ui::chatScreen)
 {
     ui->setupUi(this);
+    this->setWindowFlags(((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowCloseButtonHint));
 }
 
 void chatScreen::run() {
+    this->setWindowTitle("User logged in: " + user.getUsername());
+
     const QString hostName = "127.0.0.1";
     const int port = 1883;
 
@@ -458,6 +461,13 @@ void chatScreen::on_buttonAddContact_clicked()
 
 void chatScreen::on_buttonProfile_clicked()
 {
+    QString disconnectUser = "dc/" + user.getUsername();
+    client->publish(topic, disconnectUser.toUtf8());
+
+    if(client->state() != QMqttClient::Disconnected){
+        client->disconnectFromHost();
+    }
+
     profileScreen *openProfileScreen = new profileScreen;
     openProfileScreen->acceptUser(user);
     openProfileScreen->show();
@@ -469,10 +479,13 @@ void chatScreen::logout(){
     QString disconnectUser = "dc/" + user.getUsername();
     client->publish(topic, disconnectUser.toUtf8());
 
+    if(client->state() != QMqttClient::Disconnected){
+        client->disconnectFromHost();
+    }
+
     loginScreen *openLoginScreen = new loginScreen;
     openLoginScreen->show();
 
-    this->hide();
     close();
 }
 
@@ -530,6 +543,7 @@ void chatScreen::refresh(){
         ui->comboBoxContacts->addItem(contactUsername);
     }
     ui->comboBoxContacts->setCurrentText(otherUser);
+    resetInactivityTimer();
 }
 
 void chatScreen::on_buttonUserPicture_clicked()

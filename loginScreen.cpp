@@ -16,6 +16,9 @@ loginScreen::loginScreen(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setWindowFlags(((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowCloseButtonHint));
+    this->setWindowTitle("Login or Register");
+
     ui->username->setPlaceholderText("Enter Username");
     ui->password->setPlaceholderText("Enter Password");
 

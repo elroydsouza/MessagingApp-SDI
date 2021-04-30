@@ -11,9 +11,11 @@ contactsScreen::contactsScreen(QWidget *parent) :
     ui(new Ui::contactsScreen)
 {
     ui->setupUi(this);
+    this->setWindowFlags(((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowCloseButtonHint));
 }
 
 void contactsScreen::run(){
+    this->setWindowTitle("Add Contact");
     fillListWidgets();
 }
 

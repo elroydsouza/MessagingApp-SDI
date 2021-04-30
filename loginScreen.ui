@@ -498,13 +498,6 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_23">
       <item>
-       <widget class="QLabel" name="currentDateTime">
-        <property name="text">
-         <string>Monday, 25-10-2015 3:14 PM</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="horizontalSpacer_13">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

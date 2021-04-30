@@ -8,9 +8,12 @@ profileScreen::profileScreen(QWidget *parent) :
     ui(new Ui::profileScreen)
 {
     ui->setupUi(this);
+    this->setWindowFlags(((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowCloseButtonHint));
 }
 
 void profileScreen::run(){
+    this->setWindowTitle("User Profile");
+
     ui->labelUsername->setText("Welcome " + user.getUsername() + "!");
 
     ui->lineEditFirstName->setText(user.getFirstName());
