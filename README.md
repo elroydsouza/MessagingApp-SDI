@@ -1,6 +1,6 @@
 # MessagingApp-SDI
 A messaging application that allows for communication across windows.  
-This application was created in collaboration with another student as a group project.  
+This application was created in collaboration with @ReeceJMartin
 
 This messaging application can complete the following tasks:  
 - Registration and Login  
